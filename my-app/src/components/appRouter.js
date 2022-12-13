@@ -1,20 +1,27 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {Switch, Route} from "react-router-dom";
-import {publicRoutes} from "../routes";
-import {store} from "../Store/store";
-import {createAuth} from "../Store/actionCreators";
-import {useSelector} from "react-redux";
+import {publicRoutes, authRoutes} from "../routes";
+import {Redirect} from "react-router";
+import MainPage from "../Pages/mainPage";
+import {observer} from "mobx-react-lite";
+import isAuth from "../Store/auth"
+import {Context} from "../index";
 
-const AppRouter = () => {
-    //store.dispatch(createAuth(true));
-    const isAuth = useSelector(state => state.auth.status);
+const AppRouter = observer (() => {
+
+    const {user} = useContext(Context);
+
     return (
         <Switch>
+            {user.isAuth && authRoutes.map(({path, Component}) =>
+                <Route key = {path} path = {path} component={Component} exact/>
+            )}
             {publicRoutes.map(({path, Component}) =>
                 <Route key = {path} path = {path} component={Component} exact/>
             )}
+            <Redirect to={MainPage}/>
         </Switch>
     );
-};
+})
 
 export default AppRouter;

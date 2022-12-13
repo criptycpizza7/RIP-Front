@@ -1,10 +1,17 @@
 import React from 'react';
 import {Col} from "react-bootstrap";
 import {useSelector} from "react-redux";
+import {getCart} from "../components/requests";
 
 function Cart(){
 
-    const cart = useSelector(state => state.cart.arr);
+    const cart = getCart(6);
+
+    async function makeCart(){
+
+    }
+
+    console.log(cart);
 
     return (
         <div>

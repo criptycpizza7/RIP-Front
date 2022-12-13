@@ -1,29 +1,26 @@
 import React, {useState} from "react";
-import {store} from "../Store/store";
-import {createGame, createLoading} from "../Store/actionCreators";
-import {getGameByName, getGenres} from "../components/requests";
-import {Button, Col, Row} from "react-bootstrap";
+import AuthService, {getGameByName, getGenres} from "../components/requests";
+import {Col} from "react-bootstrap";
 import InputField from "../components/inputField";
 import {GameCard} from "../components/gameCard";
-import {useDispatch, useSelector} from "react-redux";
+import gameStore from "../Store/gameStore";
+import {observer} from "mobx-react-lite";
 
-function MainPage() {
+const MainPage = observer (() => {
 
-    //const [loading, setLoading] = useState(false);
+    //AuthService.verify()
 
     const [searchGame, setSearchGame] = useState('Borderlands 2');
 
     const [gamesGens, setGamesGens] = useState([]);
 
-    const loadingHook = useSelector(state => state.load.status);
-
-    const dispatch = useDispatch();
+    const [loading, setLoading] = useState(false);
 
     const handleSearchGame = async () =>{
-        dispatch(createLoading(true));
+        setLoading(true);
         const results = await getGameByName(searchGame);
-        store.dispatch(createGame(results));
-        const games = store.getState().game.arr;
+        results.forEach(element => gameStore.add(element));
+        const games = results;
         const genres = await getGenres();
         let genre = [];
         for(let i = 0; i < games.length; i++){
@@ -41,18 +38,20 @@ function MainPage() {
         }
         setGamesGens(genre);
         // Убираем загрузку
-        dispatch(createLoading(false));
+        setLoading(false);
+        gameStore.mas = results;
     }
-
 
     return (
         <div>
-            <InputField value={searchGame} placeholder='Поиск' setValue={setSearchGame} loading={store.getState().load.status} onSubmit={handleSearchGame} buttonTitle={'Искать'}/>
+            <InputField value={searchGame} placeholder='Поиск' setValue={setSearchGame} loading={loading} onSubmit={handleSearchGame} buttonTitle={'Искать'}/>
             {!gamesGens.length ? <h1 key = 'outh1'>К сожалению, пока ничего не найдено :(</h1>:
                 <Col>
                     {gamesGens.map((game) => {
                         return (
-                            <GameCard game = {game.name} genre = {game.genre} date = {game.releasedate} object={game}/>
+                            <div key = {game.id}>
+                                <GameCard game = {game.name} genre = {game.genre} date = {game.releasedate} object={game}/>
+                            </div>
                         );
                     })}
                 </Col>}
@@ -63,6 +62,6 @@ function MainPage() {
             }
         </div>
     );
-}
+})
 
 export default MainPage;

@@ -1,52 +1,26 @@
 import {Button, Card} from "react-bootstrap";
 import React, {useState} from "react";
-import {store} from "../Store/store";
-import {useSelector} from "react-redux";
-import {createCart} from "../Store/actionCreators";
+import AuthService, {CartService} from "./requests";
+import isAuth from '../Store/auth';
+import Cart from '../Store/cartStore';
+import {observer} from "mobx-react-lite";
 
-let isInCart = false;
+const GameCard = observer (({game, genre, date, object}) => {
 
-const GameCard = ({game, genre, date, object}) => {
+    const cart = Cart.mas;
+    let ind = [];
+    cart.forEach(elem => ind.push(elem.id));
 
-    const isAuth = useSelector(state => state.auth.status);
-    //const cart = useSelector(state => state.cart.arr);
-    const [upd, setUpd] = useState(false);
+    const auth = isAuth.status;
+    const [isInCart, setIsInCart] = useState(ind.indexOf(object.id) !== -1);
 
-    function update() {
-        console.log(isInCart);
-        if(isInCart){
-            console.log(1);
-            let cart = store.getState().cart.arr;
-            for(let i = 0; i < cart.length; ++i){
-                if(cart[i].id === object.id)
-                    cart.slice(i, 1);
-            }
-            isInCart = false;
-            setUpd(false);
-            store.dispatch(createCart(cart));
-            console.log(11);
-        }
-        else{
-            console.log(0);
-            let cart = store.getState().cart.arr;
-            console.log(10);
-            cart.push(object);
-            console.log(20);
-            isInCart = true;
-            setUpd(true);
-            console.log(isInCart);
-            store.dispatch(createCart(cart));
-        }
+    async function update() {
+        await CartService.addToCart(6, object.id);
+        setIsInCart(!isInCart);
     }
 
-    const cart = useSelector(state => state.cart.arr);
+    for(let i = 0; i < cart.length; ++i){
 
-    for(let i; i < cart.length; ++i){
-        if(object.id === cart[i].id) {
-            isInCart = true;
-            setUpd(true);
-        }
-        setUpd(upd);
     }
 
     return( <Card>
@@ -66,6 +40,6 @@ const GameCard = ({game, genre, date, object}) => {
         </Card.Body>
     </Card>
     )
-}
+})
 
 export {GameCard};

@@ -1,20 +1,22 @@
-import React from 'react';
+import React, {createContext} from 'react';
 import ReactDOM from 'react-dom/client';
 import './css/index.css';
 import App from './Pages/App';
 import reportWebVitals from './reportWebVitals';
-import {Provider} from "react-redux";
-import {store} from "./Store/store";
-import {BrowserRouter} from "react-router-dom";
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import UserStore from './Store/auth'
+import GameStore from "./Store/gameStore";
+
+export const Context = createContext(null);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <Provider store = {store}>
-      <BrowserRouter>
+    <Context.Provider value={{
+        user: UserStore,
+        games: GameStore,
+    }}>
         <App />
-      </BrowserRouter>
-  </Provider>
+    </Context.Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function
