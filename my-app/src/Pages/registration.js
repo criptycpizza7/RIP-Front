@@ -1,7 +1,8 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, Card, Container, Form, NavLink, Row} from "react-bootstrap";
-import {REGISTRATION_ROUTE} from "../utils/routes";
+import {AUTH_ROUTE, REGISTRATION_ROUTE} from "../utils/routes";
 import AuthService from "../components/requests";
+import {useHistory} from "react-router";
 
 const Registration = () => {
 
@@ -9,6 +10,9 @@ const Registration = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confPassword, setConfPassword] = useState('');
+    const [isMan, setIsMan] = useState(false);
+
+    const history = useHistory();
 
     const emailRE = /^[\w]{1}[\w-\.]*@[\w-]+\.[a-z]{2,4}$/i;
 
@@ -39,8 +43,13 @@ const Registration = () => {
         } catch (e){
             alert(e.response.data.message);
         }
-        AuthService.registration(login, password, email);
+        AuthService.registration(login, password, email, isMan);
+        history.push(AUTH_ROUTE);
     }
+
+    useEffect(() => {
+        console.log(isMan);
+    }, [isMan])
 
     return (
         <Container
@@ -74,6 +83,13 @@ const Registration = () => {
                         placeholder='Подтвердите пароль'
                         value={confPassword}
                         onChange={e => setConfPassword(e.target.value)}
+                    />
+                    <Form.Check
+                        className='mt-1'
+                        type="switch"
+                        id="custom-switch"
+                        label="Мэнеджер"
+                        onChange={() => setIsMan(!isMan)}
                     />
                     <Row className='d-flex justify-content-between mt-3'>
                         <div>

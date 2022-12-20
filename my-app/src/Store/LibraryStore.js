@@ -1,15 +1,14 @@
 import {makeAutoObservable} from "mobx";
-import {useContext} from "react";
 
-class Cart{
+class LibraryStore{
 
     constructor() {
         this.mas = [];
         makeAutoObservable(this);
     }
 
-    make(cart){
-        this.mas = cart;
+    make(lib){
+        this.mas = lib;
     }
 
     add(game){
@@ -17,7 +16,7 @@ class Cart{
     }
 
     del(id){
-        this.mas = this.mas.filter(cart => cart.pk !== id);
+        this.mas = this.mas.filter(lib => lib.pk !== id);
     }
 
     get arr(){
@@ -25,4 +24,4 @@ class Cart{
     }
 }
 
-export default new Cart();
+export default new LibraryStore();

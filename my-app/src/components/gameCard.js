@@ -1,44 +1,78 @@
-import {Button, Card} from "react-bootstrap";
-import React, {useState} from "react";
+import {Button, Card, Col, Row} from "react-bootstrap";
+import React, {useContext, useState} from "react";
 import AuthService, {CartService} from "./requests";
-import isAuth from '../Store/auth';
-import Cart from '../Store/cartStore';
 import {observer} from "mobx-react-lite";
+import UserStore from "../Store/auth";
+import {Context} from "../index";
+import {useHistory} from "react-router";
 
 const GameCard = observer (({game, genre, date, object}) => {
 
-    const cart = Cart.mas;
-    let ind = [];
-    cart.forEach(elem => ind.push(elem.id));
+    const {user} = useContext(Context);
+    const {cart} = useContext(Context);
+    const {lib} = useContext(Context);
 
-    const auth = isAuth.status;
+    const history = useHistory();
+
+    const isAuth = UserStore.isAuth;
+    let ind = [];
+    cart.arr.map(elem => ind.push(elem.game_id));
+
+    let indLib = [];
+    lib.arr.map(elem => indLib.push(elem.game_id));
+
+    let pk = 0;
+    for(let i = 0; i < cart.arr.length; ++i)
+        if(object.id === cart.arr[i].game_id)
+            pk = cart.arr[i].pk;
+
+    let pkLib = 0;
+    for(let i = 0; i < lib.arr.length; ++i)
+        if(object.id === lib.arr[i].game_id)
+            pkLib = lib.arr[i].pk;
+
     const [isInCart, setIsInCart] = useState(ind.indexOf(object.id) !== -1);
+    const [isInLib, setIsInLib] = useState(indLib.indexOf(object.id) !== -1);
 
     async function update() {
-        await CartService.addToCart(6, object.id);
-        setIsInCart(!isInCart);
+        if(!isInCart) {
+            await CartService.addToCart(user.user, object.id);
+            setIsInCart(!isInCart);
+        }
+        else{
+            await CartService.delFromCart(pk);
+            setIsInCart(!isInCart);
+        }
     }
 
-    for(let i = 0; i < cart.length; ++i){
-
-    }
-
-    return( <Card>
-        <Card.Body>
-            <div className="textStyle">
-                <Card.Title>{game}</Card.Title>
-            </div>
-            <div  className="textStyle">
-                <Card.Text>
-                    {genre + ''}
-                </Card.Text>
-                <Card.Footer>
-                    {date}
-                </Card.Footer>
-                {!isInCart ? <Button onClick={update}> Add to cart </Button>: <Button variant='warning' onClick={update}> Del from cart </Button>}
-            </div>
-        </Card.Body>
-    </Card>
+    return(
+        <Col md={3} className='mt-2'>
+            <Card onClick={() => history.push('/games' + `/${object.id}`)}>
+                <Card.Body>
+                    <div className="textStyle">
+                        <Card.Title>{game}</Card.Title>
+                    </div>
+                    <div  className="textStyle">
+                        <Card.Text>
+                            {genre + ''}
+                        </Card.Text>
+                        <Card.Footer>
+                            {date}
+                        </Card.Footer>
+                        {isAuth ?
+                            (isInLib ?
+                                (<Button variant='success'> В библиотеке </Button>)
+                                    :
+                                    !isInCart ? (<Button onClick={update}> Добавить в корзину </Button>)
+                                    :
+                                    (<Button variant='warning' onClick={update}> Удалить из корзины </Button>)
+                            )
+                        : <div></div>
+                        }
+                    </div>
+                </Card.Body>
+            </Card>
+        </Col>
     )
 })
 

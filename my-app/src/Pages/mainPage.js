@@ -1,14 +1,17 @@
-import React, {useState} from "react";
-import AuthService, {getGameByName, getGenres} from "../components/requests";
-import {Col} from "react-bootstrap";
+import React, {useContext, useEffect, useState} from "react";
+import AuthService, {getCart, getGameByName, getGenres, getLib} from "../components/requests";
+import {Col, Container, Row} from "react-bootstrap";
 import InputField from "../components/inputField";
 import {GameCard} from "../components/gameCard";
 import gameStore from "../Store/gameStore";
 import {observer} from "mobx-react-lite";
+import {Context} from "../index";
 
 const MainPage = observer (() => {
 
-    //AuthService.verify()
+    const {user} = useContext(Context);
+    const {cart} = useContext(Context);
+    const {lib} = useContext(Context);
 
     const [searchGame, setSearchGame] = useState('Borderlands 2');
 
@@ -17,9 +20,12 @@ const MainPage = observer (() => {
     const [loading, setLoading] = useState(false);
 
     const handleSearchGame = async () =>{
+        cart.make(await getCart(user.user));
+        lib.make(await getLib(user.user));
+
+        //console.log(user.user);
         setLoading(true);
         const results = await getGameByName(searchGame);
-        results.forEach(element => gameStore.add(element));
         const games = results;
         const genres = await getGenres();
         let genre = [];
@@ -38,27 +44,25 @@ const MainPage = observer (() => {
         }
         setGamesGens(genre);
         // Убираем загрузку
+        gameStore.setGames(gamesGens);
         setLoading(false);
-        gameStore.mas = results;
     }
+
+    useEffect(() =>{
+        user.setUser(parseInt(localStorage.getItem('user_id')));
+    }, [])
 
     return (
         <div>
             <InputField value={searchGame} placeholder='Поиск' setValue={setSearchGame} loading={loading} onSubmit={handleSearchGame} buttonTitle={'Искать'}/>
             {!gamesGens.length ? <h1 key = 'outh1'>К сожалению, пока ничего не найдено :(</h1>:
-                <Col>
+                <Row>
                     {gamesGens.map((game) => {
                         return (
-                            <div key = {game.id}>
-                                <GameCard game = {game.name} genre = {game.genre} date = {game.releasedate} object={game}/>
-                            </div>
+                            <GameCard game = {game.name} genre = {game.genre} date = {game.releasedate} object={game}/>
                         );
                     })}
-                </Col>}
-            {gamesGens.length > 0 &&
-                <Col>
-                    <input type="checkbox"/>
-                </Col>
+                </Row>
             }
         </div>
     );

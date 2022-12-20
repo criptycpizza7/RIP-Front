@@ -6,17 +6,21 @@ import '../css/App.css'
 import {observer} from "mobx-react-lite";
 import {Context} from "../index";
 import AuthService from "../components/requests";
-import UserStore from '../Store/auth'
 import {Spinner} from "react-bootstrap";
 
 const App = observer (() => {
     const {user} = useContext(Context);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        AuthService.verify(localStorage.getItem('token')).then(data => {
-            user.setIsAuth(true);
-        }).finally(() => setLoading(false))
+        const token = localStorage.getItem('token');
+        if(token !== '')
+            AuthService.verify(localStorage.getItem('token')).then(data => {
+                user.setIsAuth(true);
+        }).catch(data => {
+            user.setIsAuth(false);
+            })
+                .finally(() => setLoading(false))
     })
 
     if(loading){

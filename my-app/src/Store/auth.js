@@ -3,8 +3,9 @@ import {makeAutoObservable} from "mobx";
 class UserStore{
     constructor() {
         this._isAuth = false;
-        this._user = {};
+        this._user = 0;
         this._token = '';
+        this._is_manager = false;
         makeAutoObservable(this);
     }
 
@@ -20,6 +21,10 @@ class UserStore{
         this._token = token;
     }
 
+    setManager(bool){
+        this._is_manager = bool;
+    }
+
     get isAuth(){
         return this._isAuth;
     }
@@ -30,6 +35,10 @@ class UserStore{
 
     get token(){
         return this._token;
+    }
+    
+    get is_manager(){
+        return this._is_manager;
     }
 }
 

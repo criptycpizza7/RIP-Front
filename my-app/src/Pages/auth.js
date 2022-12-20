@@ -3,10 +3,8 @@ import {Button, Card, Container, Form, NavLink, Row} from "react-bootstrap";
 import {MAIN_PAGE_ROUTE, REGISTRATION_ROUTE} from "../utils/routes";
 import AuthService from "../components/requests";
 import {observer} from "mobx-react-lite";
-import UserStore from '../Store/auth';
 import {useHistory} from "react-router";
 import {Context} from "../index";
-import jwtDecode from "jwt-decode";
 
 
 const Auth = observer (() => {
@@ -21,6 +19,10 @@ const Auth = observer (() => {
         try {
             const response = await AuthService.logIn(login, password);
             user.setIsAuth(true);
+            user.setManager(response.is_manager);
+            console.log(user.is_manager);
+            user.setUser(response.user_id);
+            localStorage.setItem('user_id', response.user_id.toString());
             history.push(MAIN_PAGE_ROUTE);
         }
         catch (e){
@@ -50,7 +52,7 @@ const Auth = observer (() => {
                     />
                     <Row className='d-flex justify-content-between mt-3'>
                         <div>
-                            <NavLink to={REGISTRATION_ROUTE}>Регистрация</NavLink>
+                            <div onClick={() => history.push(REGISTRATION_ROUTE)}>Регистрация</div>
                         </div>
                         <Button variant='outline-success' onClick={logIn}>
                             Войти

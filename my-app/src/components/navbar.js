@@ -4,7 +4,8 @@ import {observer} from "mobx-react-lite";
 import {Context} from "../index";
 import UserStore from '../Store/auth';
 import {useHistory} from "react-router";
-import {CART_ROUTE} from "../utils/routes";
+import {CART_ROUTE, MAIN_PAGE_ROUTE, MANAGER_ROUTE} from "../utils/routes";
+import AuthService from "./requests";
 
 const NavBar = observer (() => {
 
@@ -18,20 +19,25 @@ const NavBar = observer (() => {
         UserStore.setToken('');
         UserStore.setIsAuth(false);
         localStorage.setItem('token', '');
+        AuthService.logOut();
     }
 
     return (
         <Navbar bg="dark" variant="dark" style={{height: 54}}>
             <Container>
-                <Navbar.Brand href="/">Главная</Navbar.Brand>
+                <Navbar.Brand onClick={() => history.push(MAIN_PAGE_ROUTE)}>Главная</Navbar.Brand>
                 {!user.isAuth ?
                 <Nav className='ml-auto' style={{color: 'white'}}>
                     <Button className='ms-1' variant="primary" href='/auth'>Войти</Button>
                 </Nav>
                     :
                 <Nav>
-                    <Button variant='danger' onClick={() => history.push(CART_ROUTE)}>{"Корзина" + " (" + cart.length + ")"}</Button>
-                    <Button variant={"secondary"} onClick={logOut}>Выйти</Button>
+                    {user.is_manager ?
+                        <Button variant={"info"} onClick={() => history.push(MANAGER_ROUTE)}>Панель менеджера</Button>
+                        :
+                        <div></div>}
+                        <Button variant='danger' onClick={() => history.push(CART_ROUTE)}>{"Аккаунт"}</Button>
+                        <Button variant={"secondary"} onClick={logOut}>Выйти</Button>
                 </Nav>
                 }
             </Container>

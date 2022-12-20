@@ -26,6 +26,16 @@ const getGameByName = async (name = DEFAULT_SEARCH_GAME) =>{
     return res;
 }
 
+const getGameByID = async (id = 0) =>{
+    const res = axios.get(`http://127.0.0.1:8000/Games/${id}`)
+        .then((response) => {
+            return response.data;
+        }).catch(()=>{
+            return {resultCount:0, results:[]}
+        })
+    return res;
+}
+
 const getGenres = async () => {
     const res = axios.get(`http://127.0.0.1:8000/Genres/?format=json`)
         .then((response) => {
@@ -37,7 +47,17 @@ const getGenres = async () => {
 }
 
 const getCart = async (id = 0) => {
-    const res = axios.get(`http://127.0.0.1:8000/api/cart?search=${id}`)
+    const res = axios.get(`http://127.0.0.1:8000/Cart/?search=${id}`)
+        .then((response) => {
+            return response.data;
+        }).catch(() => {
+            return {resultCount:0, results:[]}
+        })
+    return res;
+}
+
+const getLib = async (id = 0) => {
+    const res = axios.get(`http://127.0.0.1:8000/Library/?search=${id}`)
         .then((response) => {
             return response.data;
         }).catch(() => {
@@ -48,19 +68,44 @@ const getCart = async (id = 0) => {
 
 class CartService{
     static async addToCart(userID = 0, gameID = 0){
-        return (await api.post('/addToCart', {userID, gameID})).data
+        return (await api.post('/addToCart', {
+            "user_id": userID,
+            "game_id": gameID
+        })).data
+    }
+
+    static async delFromCart(pk = 0){
+        return (await axios.post(`http://127.0.0.1:8000/Cart/${pk}/delete/`))
     }
 }
+
+class LibService{
+    static async addToLib(userID = 0, gameID = 0){
+        return (await axios.post(`http://127.0.0.1:8000/Library/`, {
+            "user_id": userID,
+            "game_id": gameID
+        })).data
+    }
+}
+
 
 export default class AuthService{
     static async logIn(login = '', password = ''){
         const {data} = await axios.post('http://127.0.0.1:8000/api/login/', {login, password});
         localStorage.setItem('token', data.access);
+        const user = jwtDecode(data.access);
+        localStorage.setItem('user', user.user_id);
+        UserStore.setUser(user.user_id);
         return jwtDecode(data.access);
     }
 
-    static async registration(login = '', password = '', email = ''){
-        return axios.post('http://127.0.0.1:8000/api/register', {"login": login, "password": password, "email": email});
+    static async registration(login = '', password = '', email = '', isMan = false){
+        return axios.post('http://127.0.0.1:8000/api/register', {
+            "login": login,
+            "password": password,
+            "email": email,
+            "is_manager": isMan
+        });
     }
 
     static async logOut(){
@@ -72,9 +117,8 @@ export default class AuthService{
     }
 
     static async verify(token){
-        const {data} = api.post('/token/verify', token);
-        localStorage.setItem('token', data.access);
+        const {data} = await api.post('/token/verify/', {'token': token});
     }
 }
 
-export {getGameByName, getGenres, CartService, getCart};
+export {getGameByName, getGenres, CartService, getCart, getGameByID, getLib, LibService};
