@@ -6,7 +6,7 @@ import UserStore from "../Store/auth";
 import {Context} from "../index";
 import {useHistory} from "react-router";
 
-const GameCard = observer (({game, genre, date, object}) => {
+const GameCard = observer (({game, genre, price, object}) => {
 
     const {user} = useContext(Context);
     const {cart} = useContext(Context);
@@ -47,30 +47,30 @@ const GameCard = observer (({game, genre, date, object}) => {
 
     return(
         <Col md={3} className='mt-2'>
-            <Card onClick={() => history.push('/games' + `/${object.id}`)}>
-                <Card.Body>
+            <Card>
+                <Card.Body onClick={() => history.push('/games' + `/${object.id}`)}>
                     <div className="textStyle">
                         <Card.Title>{game}</Card.Title>
                     </div>
                     <div  className="textStyle">
                         <Card.Text>
-                            {genre + ''}
+                            <div>{genre}</div>
+                            <div>{price + '$'}</div>
                         </Card.Text>
-                        <Card.Footer>
-                            {date}
-                        </Card.Footer>
-                        {isAuth ?
-                            (isInLib ?
-                                (<Button variant='success'> В библиотеке </Button>)
-                                    :
-                                    !isInCart ? (<Button onClick={update}> Добавить в корзину </Button>)
-                                    :
-                                    (<Button variant='warning' onClick={update}> Удалить из корзины </Button>)
-                            )
-                        : <div></div>
-                        }
                     </div>
                 </Card.Body>
+                <Card.Footer>
+                    {isAuth ?
+                        (isInLib ?
+                                (<Button variant='success'> В библиотеке </Button>)
+                                :
+                                !isInCart ? (<Button onClick={update}> Добавить в корзину </Button>)
+                                    :
+                                    (<Button variant='warning' onClick={update}> Удалить из корзины </Button>)
+                        )
+                        : <div></div>
+                    }
+                </Card.Footer>
             </Card>
         </Col>
     )

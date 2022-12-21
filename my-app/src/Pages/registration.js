@@ -47,10 +47,6 @@ const Registration = () => {
         history.push(AUTH_ROUTE);
     }
 
-    useEffect(() => {
-        console.log(isMan);
-    }, [isMan])
-
     return (
         <Container
             className='d-flex justify-content-center align-items-top'
@@ -88,7 +84,7 @@ const Registration = () => {
                         className='mt-1'
                         type="switch"
                         id="custom-switch"
-                        label="Мэнеджер"
+                        label="Менеджер"
                         onChange={() => setIsMan(!isMan)}
                     />
                     <Row className='d-flex justify-content-between mt-3'>

@@ -36,6 +36,18 @@ const getGameByID = async (id = 0) =>{
     return res;
 }
 
+const addGame = async (name = '', developer = '', publisher = '', releaseDate = '', price = 0, genres = '', managed_by = 0) => {
+    return (await axios.post('http://127.0.0.1:8000/Games/', {
+        "name": name,
+        "genre": genres,
+        "releasedate": releaseDate,
+        "developer": developer,
+        "publisher": publisher,
+        "price": price,
+        "managed_by": managed_by
+    })).data
+}
+
 const getGenres = async () => {
     const res = axios.get(`http://127.0.0.1:8000/Genres/?format=json`)
         .then((response) => {
@@ -121,4 +133,4 @@ export default class AuthService{
     }
 }
 
-export {getGameByName, getGenres, CartService, getCart, getGameByID, getLib, LibService};
+export {getGameByName, getGenres, CartService, getCart, getGameByID, getLib, LibService, addGame};

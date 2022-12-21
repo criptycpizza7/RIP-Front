@@ -26,23 +26,7 @@ const MainPage = observer (() => {
         //console.log(user.user);
         setLoading(true);
         const results = await getGameByName(searchGame);
-        const games = results;
-        const genres = await getGenres();
-        let genre = [];
-        for(let i = 0; i < games.length; i++){
-            const gens = games[i].genre;
-            let gen_names = [];
-            for(let j = 0; j < gens.length; j++){
-                for(let k = 0; k < genres.length; k++){
-                    if(genres[k].id === gens[j]){
-                        gen_names.push(genres[k].name);
-                    }
-                }
-            }
-            genre.push({'id': games[i].id, 'name': games[i].name, 'genre': gen_names, 'releasedate': games[i].releasedate,
-                'publisher': games[i].publisher, 'developer': games[i].developer, 'price': games[i].price});
-        }
-        setGamesGens(genre);
+        setGamesGens(results);
         // Убираем загрузку
         gameStore.setGames(gamesGens);
         setLoading(false);
@@ -59,7 +43,7 @@ const MainPage = observer (() => {
                 <Row>
                     {gamesGens.map((game) => {
                         return (
-                            <GameCard game = {game.name} genre = {game.genre} date = {game.releasedate} object={game}/>
+                            <GameCard game = {game.name} genre = {game.genre} price = {game.price} object={game}/>
                         );
                     })}
                 </Row>
