@@ -74,7 +74,7 @@ const Cart = observer(() => {
                     {games.map((game) => {
                         return(
                             <div key ={game.id}>
-                                <CartCard name = {game.name} cart_id = {game.cart_id} game_id = {game.id}/>
+                                <CartCard name = {game.name} cart_id = {game.cart_id} game_id = {game.id} price={game.price}/>
                             </div>
                         )
                     })

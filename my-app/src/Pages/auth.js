@@ -5,6 +5,7 @@ import AuthService from "../components/requests";
 import {observer} from "mobx-react-lite";
 import {useHistory} from "react-router";
 import {Context} from "../index";
+import {Alert} from "bootstrap";
 
 
 const Auth = observer (() => {
@@ -17,13 +18,19 @@ const Auth = observer (() => {
 
     async function logIn(){
         try {
-            const response = await AuthService.logIn(login, password);
-            user.setIsAuth(true);
-            user.setManager(response.is_manager);
-            console.log(user.is_manager);
-            user.setUser(response.user_id);
-            localStorage.setItem('user_id', response.user_id.toString());
-            history.push(MAIN_PAGE_ROUTE);
+            AuthService.logIn(login, password).then(response => {
+                user.setIsAuth(true);
+                user.setManager(response.is_manager);
+                user.setUser(response.user_id);
+                localStorage.setItem('user_id', response.user_id.toString());
+                localStorage.setItem('is_man', response.is_manager.toString());
+                history.push(MAIN_PAGE_ROUTE);
+            }).catch(response => {
+                console.log(response.response.data.detail);
+                if(response.response.data.detail === 'No active account found with the given credentials')
+                    alert('Введены неверные данные');
+            });
+
         }
         catch (e){
             console.log(e.response.data.message)

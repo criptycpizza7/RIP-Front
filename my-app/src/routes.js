@@ -1,10 +1,19 @@
 import MainPage from "./Pages/mainPage";
-import {MAIN_PAGE_ROUTE, GAME_ROUTE, CART_ROUTE, REGISTRATION_ROUTE, AUTH_ROUTE, MANAGER_ROUTE} from "./utils/routes";
+import {
+    MAIN_PAGE_ROUTE,
+    GAME_ROUTE,
+    CART_ROUTE,
+    REGISTRATION_ROUTE,
+    AUTH_ROUTE,
+    MANAGER_ROUTE,
+    GAME_MAN_ROUTE
+} from "./utils/routes";
 import gamePage from "./Pages/page";
 import cart from "./Pages/cart";
 import Auth from "./Pages/auth";
 import ManagerPage from "./Pages/managerPage";
 import Registration from "./Pages/registration";
+import GameManPage from "./Pages/gameManPage";
 
 export const publicRoutes = [
     {
@@ -36,5 +45,9 @@ export const managerRoutes = [
     {
         path: MANAGER_ROUTE,
         Component: ManagerPage
+    },
+    {
+        path: GAME_MAN_ROUTE + '/:id',
+        Component: GameManPage
     }
 ]

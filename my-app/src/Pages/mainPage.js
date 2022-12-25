@@ -34,6 +34,7 @@ const MainPage = observer (() => {
 
     useEffect(() =>{
         user.setUser(parseInt(localStorage.getItem('user_id')));
+        user.setManager(localStorage.getItem('is_man'));
     }, [])
 
     return (

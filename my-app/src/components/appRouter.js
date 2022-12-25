@@ -4,13 +4,11 @@ import {publicRoutes, authRoutes, managerRoutes} from "../routes";
 import {Redirect} from "react-router";
 import MainPage from "../Pages/mainPage";
 import {observer} from "mobx-react-lite";
-import isAuth from "../Store/auth"
 import {Context} from "../index";
 
 const AppRouter = observer (() => {
 
     const {user} = useContext(Context);
-    console.log(user.is_manager);
 
     return (
         <Switch>

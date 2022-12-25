@@ -4,7 +4,7 @@ import {CartService, LibService} from "../components/requests";
 import {observer} from "mobx-react-lite";
 import {Context} from "../index";
 
-const CartCard = observer( ({name, cart_id, game_id}) => {
+const CartCard = observer( ({name, cart_id, game_id, price}) => {
 
     const [loading, setLoading] = useState(false);
     const [cartS, setCart] = useState([]);
@@ -34,6 +34,9 @@ const CartCard = observer( ({name, cart_id, game_id}) => {
                         <Card.Body>
                             <div className="textStyle">
                                 <Card.Title>{name}</Card.Title>
+                            </div>
+                            <div>
+                                <Card.Text>{price}</Card.Text>
                             </div>
                             <div  className="textStyle">
                                 <Button className='mt-1' onClick={deleteGame} disabled={loading}>Удалить</Button>

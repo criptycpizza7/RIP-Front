@@ -38,13 +38,19 @@ const Registration = () => {
             alert('Введённые пароли не совпадают');
             return;
         }
-        try{
 
-        } catch (e){
-            alert(e.response.data.message);
-        }
-        AuthService.registration(login, password, email, isMan);
-        history.push(AUTH_ROUTE);
+        AuthService.registration(login, password, email, isMan).then(() => history.push(AUTH_ROUTE)).catch(response => {
+            //console.log(response.response.data.login[0]);
+            for(let key in response.response.data){
+                if(response.response.data[key][0] === 'users with this email already exists.') {
+                    alert('Пользователь с таким email уже существует');
+                }
+                if(response.response.data[key][0] === 'users with this login already exists.'){
+                    alert('Пользователь с таким логином уже сущесивует.');
+                }
+            }
+        });
+
     }
 
     return (

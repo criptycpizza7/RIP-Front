@@ -48,6 +48,19 @@ const addGame = async (name = '', developer = '', publisher = '', releaseDate = 
     })).data
 }
 
+const chgGame = async (id = 0, name = '', developer = '', publisher = '', releaseDate = '', price = 0, genres = '', managed_by = 0) => {
+    return (await axios.put(`http://127.0.0.1:8000/Games/${id}/`, {
+        "id": id,
+        "name": name,
+        "genre": genres,
+        "releasedate": releaseDate,
+        "developer": developer,
+        "publisher": publisher,
+        "price": price,
+        "managed_by": managed_by
+    })).data
+}
+
 const getGenres = async () => {
     const res = axios.get(`http://127.0.0.1:8000/Genres/?format=json`)
         .then((response) => {
@@ -70,6 +83,16 @@ const getCart = async (id = 0) => {
 
 const getLib = async (id = 0) => {
     const res = axios.get(`http://127.0.0.1:8000/Library/?search=${id}`)
+        .then((response) => {
+            return response.data;
+        }).catch(() => {
+            return {resultCount:0, results:[]}
+        })
+    return res;
+}
+
+const getGamesByMan = async (man_by) => {
+    const res = axios.get(`http://127.0.0.1:8000/getGameByMan/?search=${man_by}`)
         .then((response) => {
             return response.data;
         }).catch(() => {
@@ -133,4 +156,4 @@ export default class AuthService{
     }
 }
 
-export {getGameByName, getGenres, CartService, getCart, getGameByID, getLib, LibService, addGame};
+export {getGameByName, getGenres, CartService, getCart, getGameByID, getLib, LibService, addGame, getGamesByMan, chgGame};

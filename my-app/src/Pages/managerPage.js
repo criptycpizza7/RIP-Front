@@ -1,8 +1,12 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Button, Card, Container, Form, Row} from "react-bootstrap";
-import {addGame} from "../components/requests";
+import {Button, Card, Col, Container, Form, Row} from "react-bootstrap";
+import {addGame, getGamesByMan} from "../components/requests";
 import {Context} from "../index";
 import Calendar from "react-calendar";
+import {GameCard} from "../components/gameCard";
+import {retry} from "@reduxjs/toolkit/query";
+import {useHistory} from "react-router";
+import {GAME_MAN_ROUTE} from "../utils/routes";
 
 function isNumeric(str) {
     if (typeof str != "string") return false // we only process strings!
@@ -21,17 +25,31 @@ const ManagerPage = () => {
     const [price, setPrice] = useState('');
     const [genre, setGenre] = useState('');
 
-    const addGameButton = () => {
+    const [games, setGames] = useState([]);
+
+    const history = useHistory();
+
+    const addGameButton = async () => {
         if(isNumeric(price))
-            //console.log(name, developer, publisher, price, genre, user.user);
-            addGame(name, developer, publisher, releaseDate.getFullYear() + '-' + (releaseDate.getMonth()+1) + "-" + releaseDate.getDate(), price, genre, user.user);
+            await addGame(name, developer, publisher, releaseDate.getFullYear() + '-' + (releaseDate.getMonth()+1) + "-" + releaseDate.getDate(), price, genre, user.user);
         else
             alert('Цена должна быть числом');
     }
+
+    let res = [];
+
+    const getGames = async () => {
+        res = await getGamesByMan(user.user);
+        console.log(res);
+        setGames(res);
+        //setGames(await getGamesByMan(user.user));
+    }
+
     return (
         <Container
             className='d-flex justify-content-start align-items-top'
         >
+            <Col>
             <Card style={{width: 400}} className='p-5'>
                 <h2>{'Добавление'}</h2>
                 <Form className='d-flex flex-column'>
@@ -77,6 +95,19 @@ const ManagerPage = () => {
                     </Button>
                 </Form>
             </Card>
+            </Col>
+            <Col>
+                <div>
+                    <Button onClick={getGames}>Показать</Button>
+                    {games.map((game) => {
+                        return(
+                            <Card onClick={() => history.push(GAME_MAN_ROUTE + '/' + game.id)}>
+                                <Card.Text>{game.name}</Card.Text>
+                            </Card>
+                        )
+                    })}
+                </div>
+            </Col>
         </Container>
     );
 };

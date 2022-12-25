@@ -19,6 +19,8 @@ const NavBar = observer (() => {
         UserStore.setToken('');
         UserStore.setIsAuth(false);
         localStorage.setItem('token', '');
+        localStorage.setItem('user_id', '');
+        localStorage.setItem('is_man', '');
         AuthService.logOut();
     }
 
