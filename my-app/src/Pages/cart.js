@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Button} from "react-bootstrap";
-import {getCart, getGameByID, getLib} from "../components/requests";
+import {getCart, getGameByIDManager, getLib} from "../components/requests";
 import {observer} from "mobx-react-lite";
 import CartCard from "./CartCard";
 import {Context} from "../index";
@@ -14,6 +14,7 @@ const Cart = observer(() => {
     const [cartS, setCart] = useState([]);
     const [libS, setLib] = useState([]);
     const [games, setGames] = useState([]);
+    const [gamesLib, setGamesLib] = useState([]);
 
     const [loading, setLoading] = useState(false);
 
@@ -21,8 +22,11 @@ const Cart = observer(() => {
 
     const userID = localStorage.getItem('user');
 
+    let Games = [];
+
     const makeCart = async () => {
         await setLoading(true);
+        setGamesLib([]);
         setCartOrLib(false);
         const results = await getCart(userID);
         setCart(results);
@@ -32,10 +36,17 @@ const Cart = observer(() => {
 
     const makeLib = async () => {
         await setLoading(true);
+        setGames([]);
         setCartOrLib(true);
         const results = await getLib(userID);
         setLib(results);
         lib.make(results);
+        for(let i = 0; i < lib.mas.length; ++i){
+            let elem = await getGameByIDManager(lib.mas[i].game_id);
+            elem.lib_id = lib.mas[i].id;
+            Games.push(elem);
+        }
+        setGamesLib(Games);
         await setLoading(false);
     }
 
@@ -43,7 +54,7 @@ const Cart = observer(() => {
         const get = async () =>{
             let Games = [];
             for(let i = 0; i < cartS.length; ++i){
-                let elem = await getGameByID(cartS[i].game_id);
+                let elem = await getGameByIDManager(cartS[i].game_id);
                 elem.cart_id = cartS[i].pk;
                 Games.push(elem);
             }
@@ -53,17 +64,8 @@ const Cart = observer(() => {
     }, [cartS])
 
     useEffect( () => {
-        const get = async () =>{
-            let Games = [];
-            for(let i = 0; i < libS.length; ++i){
-                let elem = await getGameByID(libS[i].game_id);
-                elem.cart_id = libS[i].pk;
-                Games.push(elem);
-            }
-            setGames(Games);
-        }
-        get();
-    }, [libS])
+        console.log('games', games);
+    }, [games])
 
     return (
         <div>
@@ -80,12 +82,12 @@ const Cart = observer(() => {
                     })
                     }
                 </div>) :
-                (!games.length ? <div></div>:
+                (!gamesLib.length ? <div></div>:
                 <div>
-                    {games.map((game) => {
+                    {gamesLib.map((game) => {
                         return(
                             <div key ={game.id}>
-                                <LibCard name = {game.name} lib_id = {game.lib_id}/>
+                                <LibCard name = {game.name} lib_id = {game.lib_id} object={game} library={lib.mas}/>
                             </div>
                         )
                     })

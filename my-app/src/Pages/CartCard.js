@@ -11,6 +11,7 @@ const CartCard = observer( ({name, cart_id, game_id, price}) => {
 
     const {cart} = useContext(Context);
     const {user} = useContext(Context);
+    const {lib} = useContext(Context);
 
     async function deleteGame(){
         setLoading(true);
@@ -21,7 +22,12 @@ const CartCard = observer( ({name, cart_id, game_id, price}) => {
 
     async function addToLibrary(){
         setLoading(true);
-        await LibService.addToLib(user.user, game_id);
+        const today = new Date();
+        const todayStr = today.getFullYear() + '-' + (today.getMonth()+1) + "-" + today.getDate();
+        let obj = await LibService.addToLib(user.user, game_id);
+        let mas = lib.mas;
+        mas.push(obj);
+        lib.make(mas);
         await deleteGame();
         setLoading(false);
     }

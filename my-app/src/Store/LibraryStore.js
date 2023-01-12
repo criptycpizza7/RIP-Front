@@ -2,9 +2,11 @@ import {makeAutoObservable} from "mobx";
 
 class LibraryStore{
 
+    mas = [];
+
     constructor() {
         this.mas = [];
-        makeAutoObservable(this);
+        //makeAutoObservable(this);
     }
 
     make(lib){
@@ -16,7 +18,7 @@ class LibraryStore{
     }
 
     del(id){
-        this.mas = this.mas.filter(lib => lib.pk !== id);
+        this.mas = this.mas.filter(lib => lib.id !== id);
     }
 
     get arr(){

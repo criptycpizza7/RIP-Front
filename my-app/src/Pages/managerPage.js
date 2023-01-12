@@ -24,6 +24,9 @@ const ManagerPage = () => {
     const [releaseDate, setReleaseDate] = useState(new Date());
     const [price, setPrice] = useState('');
     const [genre, setGenre] = useState('');
+    const [deleted, setDeleted] = useState(false);
+
+    const [label, setLabel] = useState('Добавлено')
 
     const [games, setGames] = useState([]);
 
@@ -31,7 +34,8 @@ const ManagerPage = () => {
 
     const addGameButton = async () => {
         if(isNumeric(price))
-            await addGame(name, developer, publisher, releaseDate.getFullYear() + '-' + (releaseDate.getMonth()+1) + "-" + releaseDate.getDate(), price, genre, user.user);
+            addGame(name, developer, publisher, releaseDate.getFullYear() + '-' + (releaseDate.getMonth()+1) + "-" + releaseDate.getDate(), price, genre, user.user, deleted)
+                .catch(() => alert('Ошибка'));
         else
             alert('Цена должна быть числом');
     }
@@ -40,10 +44,23 @@ const ManagerPage = () => {
 
     const getGames = async () => {
         res = await getGamesByMan(user.user);
-        console.log(res);
         setGames(res);
         //setGames(await getGamesByMan(user.user));
     }
+
+    function delUpdate() {
+        setDeleted(!deleted);
+        if(deleted){
+            setLabel('Добавлено');
+        }
+        else{
+            setLabel('Удалено');
+        }
+    }
+
+    useEffect(() => {
+        console.log(deleted);
+    }, [deleted]);
 
     return (
         <Container
@@ -88,6 +105,13 @@ const ManagerPage = () => {
                         className='mt-2'
                         placeholder='Дата'
                         value={releaseDate.getFullYear() + '-' + (releaseDate.getMonth()+1) + "-" + releaseDate.getDate()}
+                    />
+                    <Form.Check
+                        className='mt-1'
+                        type="switch"
+                        id="custom-switch"
+                        label={label}
+                        onChange={delUpdate}
                     />
                     <Calendar value={releaseDate} onChange={setReleaseDate}></Calendar>
                     <Button className='mt-3' variant='outline-success' onClick={addGameButton}>

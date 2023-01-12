@@ -7,6 +7,7 @@ import {observer} from "mobx-react-lite";
 import {Context} from "../index";
 import AuthService from "../components/requests";
 import {Spinner} from "react-bootstrap";
+import jwtDecode from "jwt-decode";
 
 const App = observer (() => {
     const {user} = useContext(Context);
@@ -15,10 +16,13 @@ const App = observer (() => {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if(token !== '')
-            AuthService.verify(localStorage.getItem('token')).then(data => {
+            AuthService.verify(localStorage.getItem('token')).then(() => {
                 user.setIsAuth(true);
-        }).catch(data => {
+                const isMan = String(jwtDecode(localStorage.getItem('token')).is_manager);
+                user.setManager(isMan === 'true');
+        }).catch(() => {
             user.setIsAuth(false);
+            localStorage.setItem('token', '');
             })
                 .finally(() => setLoading(false))
     })

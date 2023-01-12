@@ -6,7 +6,6 @@ const inputField = ({ value, setValue, onSubmit, loading, placeholder, buttonTit
     return <div className="inputField">
         <input value={value} placeholder={placeholder} onChange={(event => setValue(event.target.value))}/>
         <Button disabled={loading} onClick={onSubmit}>{buttonTitle}</Button>
-        {/*<Button>Жанры</Button>*/}
     </div>
  }
 

@@ -34,7 +34,7 @@ const NavBar = observer (() => {
                 </Nav>
                     :
                 <Nav>
-                    {user.is_manager ?
+                    {localStorage.getItem('is_man') === 'true' ?
                         <Button variant={"info"} onClick={() => history.push(MANAGER_ROUTE)}>Панель менеджера</Button>
                         :
                         <div></div>}

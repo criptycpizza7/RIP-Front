@@ -5,7 +5,6 @@ import AuthService from "../components/requests";
 import {observer} from "mobx-react-lite";
 import {useHistory} from "react-router";
 import {Context} from "../index";
-import {Alert} from "bootstrap";
 
 
 const Auth = observer (() => {
@@ -26,11 +25,9 @@ const Auth = observer (() => {
                 localStorage.setItem('is_man', response.is_manager.toString());
                 history.push(MAIN_PAGE_ROUTE);
             }).catch(response => {
-                console.log(response.response.data.detail);
                 if(response.response.data.detail === 'No active account found with the given credentials')
                     alert('Введены неверные данные');
             });
-
         }
         catch (e){
             console.log(e.response.data.message)

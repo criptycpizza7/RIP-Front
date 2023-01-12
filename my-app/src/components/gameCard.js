@@ -34,8 +34,6 @@ const GameCard = observer (({game, genre, price, object}) => {
     const [isInCart, setIsInCart] = useState(ind.indexOf(object.id) !== -1);
     const [isInLib, setIsInLib] = useState(indLib.indexOf(object.id) !== -1);
 
-    console.log(isInLib, game);
-
     async function update() {
         if(!isInCart) {
             await CartService.addToCart(user.user, object.id);

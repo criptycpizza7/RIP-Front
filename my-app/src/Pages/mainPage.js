@@ -13,23 +13,33 @@ const MainPage = observer (() => {
     const {cart} = useContext(Context);
     const {lib} = useContext(Context);
 
-    const [searchGame, setSearchGame] = useState('Borderlands 2');
+    const [searchGame, setSearchGame] = useState('');
+    //const [searchGen, setSearchGen] = useState('');
 
     const [gamesGens, setGamesGens] = useState([]);
+    const [fullGames, setFullGames] = useState([]);
 
     const [loading, setLoading] = useState(false);
 
     const handleSearchGame = async () =>{
         cart.make(await getCart(user.user));
         lib.make(await getLib(user.user));
-
-        //console.log(user.user);
         setLoading(true);
         const results = await getGameByName(searchGame);
         setGamesGens(results);
+        setFullGames(results);
         // Убираем загрузку
         gameStore.setGames(gamesGens);
         setLoading(false);
+    }
+
+    function handleSearchGen () {
+        const searchGen = document.getElementById('genres').value;
+        console.log(Boolean(searchGen));
+        if(searchGen)
+            setGamesGens(fullGames.filter(elem => elem.genre.toLowerCase().includes(searchGen.toLowerCase())));
+        else
+            setGamesGens(fullGames);
     }
 
     useEffect(() =>{
@@ -39,7 +49,8 @@ const MainPage = observer (() => {
 
     return (
         <div>
-            <InputField value={searchGame} placeholder='Поиск' setValue={setSearchGame} loading={loading} onSubmit={handleSearchGame} buttonTitle={'Искать'}/>
+            <InputField value={searchGame} placeholder='Название' setValue={setSearchGame} loading={loading} onSubmit={handleSearchGame} buttonTitle={'Искать'}/>
+            <input id='genres' placeholder='Жанр' onChange={handleSearchGen}/>
             {!gamesGens.length ? <h1 key = 'outh1'>К сожалению, пока ничего не найдено :(</h1>:
                 <Row>
                     {gamesGens.map((game) => {

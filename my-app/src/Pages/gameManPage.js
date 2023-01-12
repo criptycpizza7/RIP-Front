@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {useHistory, useParams} from "react-router";
 import {Button, Card, Container, Form} from "react-bootstrap";
 import Calendar from "react-calendar";
-import {chgGame, getGameByID} from "../components/requests";
+import {chgGame, getGameByIDManager} from "../components/requests";
 import {Context} from "../index";
 import {MANAGER_ROUTE} from "../utils/routes";
 
@@ -22,9 +22,11 @@ const GameManPage = () => {
     const [releaseDate, setReleaseDate] = useState(new Date());
     const [price, setPrice] = useState('');
     const [genre, setGenre] = useState('');
+    const [deleted, setDeleted] = useState(false);
+
+    const [label, setLabel] = useState('Добавлено')
 
     const chgGameButton = async () => {
-        //const game = getGameByID(id);
         game['id'] = id;
         game['name'] = name;
         game['genre'] = genre;
@@ -33,7 +35,7 @@ const GameManPage = () => {
         game['publisher'] = publisher;
         game['price'] = price;
         game['managed_by'] = user.user;
-        await chgGame(game.id, game.name, game.developer, game.publisher, game.releasedate, game.price, game.genre, user.user);
+        await chgGame(game.id, game.name, game.developer, game.publisher, game.releasedate, game.price, game.genre, user.user, deleted);
         //await chgGame(game);
         history.push(MANAGER_ROUTE);
     }
@@ -41,7 +43,7 @@ const GameManPage = () => {
     useEffect(() => {
         let ignore = false;
         if(!ignore) {
-            getGameByID(id).then((res) => {
+            getGameByIDManager(id).then((res) => {
                 setName(res.name);
                 setDeveloper(res.developer);
                 setPublisher(res.publisher);
@@ -49,10 +51,26 @@ const GameManPage = () => {
                 setReleaseDate(new Date(date[0], date[1], date[2]))
                 setPrice(res.price);
                 setGenre(res.genre);
+                setDeleted(res.is_deleted);
+                console.log(res.is_deleted);
             });
         }
         return(() => ignore = true);
     }, [])
+
+    function delUpdate() {
+        setDeleted(!deleted);
+    }
+
+    useEffect(() => {
+        console.log(deleted);
+        if(!deleted){
+            setLabel('Добавлено');
+        }
+        else{
+            setLabel('Удалено');
+        }
+    }, [deleted])
 
     return (
         <Container
@@ -96,6 +114,13 @@ const GameManPage = () => {
                             className='mt-2'
                             placeholder='Дата'
                             value={releaseDate.getFullYear() + '-' + (releaseDate.getMonth()+1) + "-" + releaseDate.getDate()}
+                        />
+                        <Form.Check
+                            className='mt-1'
+                            type="switch"
+                            id="custom-switch"
+                            label={label}
+                            onChange={delUpdate}
                         />
                         <Calendar value={releaseDate} onChange={setReleaseDate}></Calendar>
                         <Button className='mt-3' variant='outline-success' onClick={chgGameButton}>

@@ -5,10 +5,18 @@ import {Redirect} from "react-router";
 import MainPage from "../Pages/mainPage";
 import {observer} from "mobx-react-lite";
 import {Context} from "../index";
+import {getLib} from "./requests";
 
 const AppRouter = observer (() => {
 
     const {user} = useContext(Context);
+    const {lib} = useContext(Context);
+
+    if(localStorage.getItem('user')) {
+        getLib(localStorage.getItem('user')).then(res => {
+            lib.make(res)
+        })
+    }
 
     return (
         <Switch>
